@@ -27,6 +27,8 @@ Resultados observados na execução dos nós do workflow:
   - Lead `warm` enviado ao CRM: resposta HTTP `200`, `{ ok: true }`, `log_id` gerado.
   - Nó `"Atualizar Status Final"` (`enviado_crm`): executado com sucesso, com confirmação de `leads.status_final = enviado_crm` no banco.
   - Nó `"Registrar no Log"` (`evento = enviado_crm`, `status = sucesso`): executado com sucesso, com nova linha criada na tabela `lead_logs`.
+- **Notificação ao Comercial (Discord)**:
+  - Nó HTTP Request `"Notificar Comercial (Discord)"`: executado com sucesso, gerando mensagem no canal para lead `hot` (testado via *Execute step*).
 - **Fluxo de Nutrição (Leads Não Qualificados - `cold`)**:
   - Lead com cargo `"Estagirio de Marketing"` foi direcionado para a rota de nutrição. O nó `"Nutrição: Atualizar Status Final"` foi executado com sucesso, com 1 item de saída. A gravação de log na tabela `lead_logs` com o evento `encaminhado_nutricao` permanece **pendente**.
 - **Simulação de Falha do CRM (`MOCK_CRM_MODE=unavailable` na Vercel)**:
@@ -38,7 +40,7 @@ Resultados observados na execução dos nós do workflow:
 
 | Cenário | Descrição | Status | Detalhes |
 | :--- | :--- | :--- | :--- |
-| 1 | Lead completo, qualificado | **parcial** | CRM e status final confirmados (`leads.status_final = enviado_crm` e registro em `lead_logs`); notificação não implementada. |
+| 1 | Lead completo, qualificado | **executado** | CRM executado (lead `hot` retornou HTTP `200` com `ok: true`); status final confirmado (`leads.status_final = enviado_crm`); log de envio confirmado (`lead_logs` com evento `enviado_crm` e status `sucesso`); notificação executada via nó HTTP Request `"Notificar Comercial (Discord)"` com envio de mensagem ao canal para lead `hot`. Executado, exceto ponto de confirmação de disparo automático no fluxo real (testado via *Execute step*). |
 | 2 | Lead completo, não qualificado | **parcial** | Fluxo `cold` até nutrição testado (nó `"Nutrição: Atualizar Status Final"` executado com 1 item); log de nutrição pendente. |
 | 3 | E-mail inválido (ex.: maria.teste@exemplo) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 4 | Campo obrigatório ausente (ex.: sem telefone) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |

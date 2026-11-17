@@ -12,7 +12,7 @@ Aplicação web voltada para a captura, qualificação e distribuição de leads
 ## 3. Etapas do Workflow no n8n
 O workflow no n8n realiza o processamento, validação, verificação de duplicidade, qualificação e direcionamento do lead.
 
-> **Status**: As etapas abaixo descrevem exclusivamente os nodes existentes no workflow. O funcionamento integrado de ponta a ponta está **em construção**.
+> **Status**: As etapas abaixo descrevem os nodes existentes no workflow.
 
 Nodes existentes no workflow:
 1. **Webhook**: Ponto de entrada que recebe a requisição HTTP enviada pela API da aplicação.
@@ -29,10 +29,11 @@ Nodes existentes no workflow:
 12. **Atualizar Classificação do Lead**: Atualiza o registro do lead com a classificação atribuída e o método utilizado.
 13. **Direcionar por Classificação**: Conduz o lead para o destino adequado conforme a sua classificação.
 14. **Enviar Lead ao CRM**: Dispara os dados do lead qualificado para a API do CRM.
+15. **Notificar Comercial (Discord)**: Dispara notificação com os dados do lead qualificado para o canal do time comercial.
 
 ## 4. Distribuição e Destino dos Leads
-- **Leads Qualificados (`hot`)**: Encaminhados para o CRM simulado via requisição HTTP.
-- **Leads `warm` e `cold`**: Destino de nutrição marcado como **pendente**.
+- **Leads Qualificados (`hot`)**: Encaminhados para o CRM simulado via requisição HTTP e notificados no canal comercial.
+- **Leads `warm` e `cold`**: Leads `warm` direcionados ao CRM; destino de nutrição para `cold` marcado como testado no fluxo e pendente de log.
 
 ## 5. Banco de Dados (Supabase)
 O banco de dados é hospedado no Supabase com tabelas criadas manualmente e **RLS (Row Level Security) ativo**:
@@ -50,10 +51,12 @@ O banco de dados é hospedado no Supabase com tabelas criadas manualmente e **RL
 - Endpoint: `POST /api/mock-crm/leads`.
 - Proteção: Autenticado pelo cabeçalho `X-Mock-Token`, validado em tempo constante.
 - Persistência: Registra o evento de recebimento exclusivamente na tabela `lead_logs` (`evento = "crm_recebido"`).
-- Status: Implementado e testado localmente. A integração com o n8n está **pendente** (aguardando disponibilização de URL pública).
+- Status: Implementado, testado e integrado ao n8n em produção.
 
 ## 7. Notificações
-- Notificações para canais externos ou equipe comercial: **não implementado**.
+- Implementada via canal do Discord por meio de webhook no nó `"Notificar Comercial (Discord)"` do n8n.
+- A URL do webhook do canal permanece configurada exclusivamente nas credenciais do n8n, nunca exposta no repositório.
+- Disparada para alertar o time comercial após a identificação e envio de leads qualificados (`hot`).
 
 ## 8. Dashboard
 - Status: **em construção**.
