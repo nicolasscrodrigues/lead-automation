@@ -1,0 +1,1 @@
+-- Schema criado manualmente no Supabase. Ver docs/database.md.

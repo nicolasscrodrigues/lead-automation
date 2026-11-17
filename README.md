@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lead Automation
 
-## Getting Started
+Aplicação web para captura, qualificação automatizada e gestão de leads, construída como case técnico.
 
-First, run the development server:
+## Stack Tecnológica
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework**: Next.js 16 (App Router)
+- **Linguagem**: TypeScript
+- **Estilização**: Tailwind CSS 4
+- **Validação**: Zod
+- **Banco de Dados**: Supabase (PostgreSQL com RLS ativo)
+- **Orquestração / Automação**: n8n (integração via webhook)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Instalação e Execução Local
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Crie o arquivo de variáveis de ambiente a partir do exemplo e preencha os valores localmente:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-## Learn More
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Para verificar tipagem e build de produção:
+   ```bash
+   npx tsc --noEmit
+   npm run build
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Status Atual do Projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Implementado e Testado
+- Scaffold Next.js (App Router, TypeScript, Tailwind CSS) e estrutura modular do projeto.
+- Validação de variáveis de ambiente sob demanda (`lib/env.ts`).
+- Cliente administrativo Supabase server-only (`lib/supabase/server.ts`).
+- Endpoint de CRM simulado (`POST /api/mock-crm/leads`) com validação de token em tempo constante (`X-Mock-Token`), simulação de indisponibilidade (`MOCK_CRM_MODE=unavailable`) e registro de auditoria em `public.lead_logs`.
+- Documentação técnica em `docs/`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Pendente
+- Formulário público de captura de leads (`app/page.tsx`, `components/LeadForm.tsx`) e endpoint `POST /api/leads`.
+- Autenticação administrativa (`app/login/page.tsx`, `app/api/auth/*`, `lib/auth/session.ts`, `middleware.ts`).
+- Dashboard de leads, filtros e KPIs (`app/dashboard/page.tsx`, `components/LeadsTable.tsx`, `components/LeadFilters.tsx`, `components/KpiCards.tsx`).
+- Export e documentação detalhada do workflow n8n (`docs/n8n-workflow.md`).
