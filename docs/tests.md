@@ -2,12 +2,21 @@
 
 Registro dos testes executados e validados no projeto até o momento.
 
-## Build e Typecheck (Etapa 0 / Etapa 1)
+## Build e Typecheck
 
 | Comando | Código Esperado | Código Obtido | Status |
 | :--- | :--- | :--- | :--- |
 | `npx tsc --noEmit` | `0` | `0` | Passou |
 | `npm run build` | `0` | `0` | Passou |
+
+## Endpoint `POST /api/leads` (Formulário Público -> Proxy n8n)
+
+Testes executados com servidor local (`npm run dev`) e requisições HTTP via `curl`:
+
+| Cenário | Código Esperado | Código Obtido | Observação |
+| :--- | :--- | :--- | :--- |
+| Payload sem `email` | `400` | `400` | Falha na validação `leadFormSchema` (Zod) |
+| Payload válido com `N8N_WEBHOOK_URL` inválida/inacessível | `502` | `502` | Retornou `{ "ok": false, "error": "Não foi possível enviar seu contato. Tente novamente." }` sem vazar a URL do webhook |
 
 ## Endpoint `POST /api/mock-crm/leads`
 
@@ -22,6 +31,5 @@ Testes executados com servidor local (`npm run dev`) e requisições HTTP via `c
 
 ## Testes Pendentes
 
-- Submissão de leads via `POST /api/leads` e integração com webhook n8n: **pendente**.
 - Autenticação (`POST /api/auth/login` e `POST /api/auth/logout`) e proteção de rotas no `middleware.ts`: **pendente**.
-- Interface de usuário (formulário público, tela de login, dashboard com filtros e KPIs): **pendente**.
+- Dashboard administrativo com filtros e KPIs: **pendente**.
