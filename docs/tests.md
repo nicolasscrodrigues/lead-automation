@@ -9,6 +9,18 @@ Registro dos testes executados e validados no projeto até o momento.
 | `npx tsc --noEmit` | `0` | `0` | Passou |
 | `npm run build` | `0` | `0` | Passou |
 
+## Autenticação e Proteção de `/dashboard`
+
+Testes executados com servidor local (`npm run dev`):
+
+| Cenário | Código Esperado | Código Obtido | Observação |
+| :--- | :--- | :--- | :--- |
+| `GET /dashboard` sem cookie de sessão | Redirecionamento (`307`) para `/login` | `307` (`Location: /login`) | Bloqueado pelo `middleware.ts` |
+| `POST /api/auth/login` com usuário errado | `401` | `401` | Retornou mensagem genérica sem definir cookie |
+| `POST /api/auth/login` com senha errada | `401` | `401` | Retornou mensagem genérica sem definir cookie |
+| `POST /api/auth/login` com credenciais válidas | `200` | `200` | Cookie `lead_automation_session` (`httpOnly`) definido com sucesso |
+| `GET /dashboard` com cookie de sessão válido | `200` | `200` | Acesso permitido à rota protegida |
+
 ## Endpoint `POST /api/leads` (Formulário Público -> Proxy n8n)
 
 Testes executados com servidor local (`npm run dev`) e requisições HTTP via `curl`:
@@ -31,5 +43,4 @@ Testes executados com servidor local (`npm run dev`) e requisições HTTP via `c
 
 ## Testes Pendentes
 
-- Autenticação (`POST /api/auth/login` e `POST /api/auth/logout`) e proteção de rotas no `middleware.ts`: **pendente**.
-- Dashboard administrativo com filtros e KPIs: **pendente**.
+- Dashboard administrativo completo (listagem de leads do Supabase, filtros e KPIs): **pendente**.

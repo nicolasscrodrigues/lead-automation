@@ -8,6 +8,7 @@ Aplicação web para captura, qualificação automatizada e gestão de leads, co
 - **Linguagem**: TypeScript
 - **Estilização**: Tailwind CSS 4
 - **Validação**: Zod
+- **Autenticação**: `jose` (JWT HS256 em cookie `httpOnly`) + `bcryptjs`
 - **Banco de Dados**: Supabase (PostgreSQL com RLS ativo)
 - **Orquestração / Automação**: n8n (integração via webhook)
 
@@ -41,10 +42,11 @@ Aplicação web para captura, qualificação automatizada e gestão de leads, co
 - Validação de variáveis de ambiente sob demanda (`lib/env.ts`).
 - Cliente administrativo Supabase server-only (`lib/supabase/server.ts`).
 - Endpoint de CRM simulado (`POST /api/mock-crm/leads`) com validação de token em tempo constante (`X-Mock-Token`), simulação de indisponibilidade (`MOCK_CRM_MODE=unavailable`) e registro de auditoria em `public.lead_logs`.
+- Formulário público de captura de leads (`app/page.tsx`, `components/LeadForm.tsx`) e proxy `POST /api/leads` para o webhook do n8n com timeout de 10s.
+- Autenticação administrativa (`POST /api/auth/login`, `POST /api/auth/logout`, `lib/auth/session.ts`, `app/login/page.tsx`, `components/LoginForm.tsx`) e proteção de `/dashboard` via `middleware.ts`.
+- Rota protegida `/dashboard` em estado inicial (`"Dashboard (em construção)"`) com botão de logout.
 - Documentação técnica em `docs/`.
 
 ### Pendente
-- Formulário público de captura de leads (`app/page.tsx`, `components/LeadForm.tsx`) e endpoint `POST /api/leads`.
-- Autenticação administrativa (`app/login/page.tsx`, `app/api/auth/*`, `lib/auth/session.ts`, `middleware.ts`).
-- Dashboard de leads, filtros e KPIs (`app/dashboard/page.tsx`, `components/LeadsTable.tsx`, `components/LeadFilters.tsx`, `components/KpiCards.tsx`).
+- Visualização completa do Dashboard de leads, filtros e KPIs (`app/dashboard/page.tsx`, `components/LeadsTable.tsx`, `components/LeadFilters.tsx`, `components/KpiCards.tsx`).
 - Export e documentação detalhada do workflow n8n (`docs/n8n-workflow.md`).

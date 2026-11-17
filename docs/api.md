@@ -2,6 +2,37 @@
 
 Documentação dos endpoints da aplicação.
 
+## `POST /api/auth/login`
+
+Autentica o usuário administrativo, valida credenciais contra `ADMIN_USERNAME` (em tempo constante via `crypto.timingSafeEqual`) e `ADMIN_PASSWORD_HASH` (via `bcryptjs.compare`), e cria o cookie de sessão `httpOnly` assinado com `SESSION_SECRET` (`HS256`, expiração de 8 horas).
+
+### Corpo da Requisição (JSON)
+
+| Campo | Tipo | Obrigatório |
+| :--- | :--- | :--- |
+| `username` | `string` | Sim |
+| `password` | `string` | Sim |
+
+### Códigos de Resposta
+
+- **`200 OK`**: Credenciais válidas. Define o cookie `lead_automation_session` (`httpOnly`, `sameSite=lax`, `path=/`, `secure` em produção, `maxAge=28800`) e retorna:
+  - Resposta: `{ "ok": true }`
+- **`401 Unauthorized`**: Usuário ou senha incorretos, ou corpo inválido. Retorna sempre a mesma mensagem genérica para evitar enumeração de usuários:
+  - Resposta: `{ "ok": false, "error": "Usuário ou senha inválidos." }`
+
+---
+
+## `POST /api/auth/logout`
+
+Encerra a sessão administrativa removendo/expirando o cookie `lead_automation_session`.
+
+### Códigos de Resposta
+
+- **`200 OK`**: Cookie de sessão limpo (`maxAge=0`).
+  - Resposta: `{ "ok": true }`
+
+---
+
 ## `POST /api/leads`
 
 Recebe os dados submetidos pelo formulário público de captura de leads, valida com `leadFormSchema` (Zod) e atua como proxy enviando o payload ao webhook do n8n configurado em `N8N_WEBHOOK_URL` (timeout de 10 segundos via `AbortSignal.timeout`).
@@ -70,15 +101,8 @@ Simula o recebimento de um lead qualificado por um CRM externo.
 - **`503 Service Unavailable`**: Retornado quando `MOCK_CRM_MODE === "unavailable"` para simular indisponibilidade do CRM. Nada é gravado no banco.
   - Resposta: `{ "error": "CRM indisponível (mock)" }`
 
----
-
-## Endpoints Pendentes
-
-- `POST /api/auth/login`: **pendente** (atualmente apenas placeholder).
-- `POST /api/auth/logout`: **pendente** (atualmente apenas placeholder).
-
 ## Decisões
 
+- A autenticação administrativa retorna a mesma mensagem em `401` tanto para usuário quanto para senha inválidos, sem registrar segredos nos logs.
 - O envio ao n8n é intermediado pelo backend Next.js (`POST /api/leads`) com timeout de 10s para ocultar a URL real do webhook do navegador e sanitizar respostas de erro.
 - Comparação do token `X-Mock-Token` implementada com `crypto.timingSafeEqual` para evitar ataques de timing.
-- Simulação de indisponibilidade controlada por variável de ambiente (`MOCK_CRM_MODE=unavailable`) antes de qualquer escrita no banco.
