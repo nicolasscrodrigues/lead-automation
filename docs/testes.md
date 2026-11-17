@@ -29,6 +29,10 @@ Resultados observados na execução dos nós do workflow:
   - Nó `"Registrar no Log"` (`evento = enviado_crm`, `status = sucesso`): executado com sucesso, com nova linha criada na tabela `lead_logs`.
 - **Fluxo de Nutrição (Leads Não Qualificados - `cold`)**:
   - Lead com cargo `"Estagirio de Marketing"` foi direcionado para a rota de nutrição. O nó `"Nutrição: Atualizar Status Final"` foi executado com sucesso, com 1 item de saída. A gravação de log na tabela `lead_logs` com o evento `encaminhado_nutricao` permanece **pendente**.
+- **Simulação de Falha do CRM (`MOCK_CRM_MODE=unavailable` na Vercel)**:
+  - Lead `hot` enviado com indisponibilidade simulada: o nó `"Enviar Lead ao CRM"` retornou HTTP `503` com a mensagem `"CRM indisponível (mock)"`.
+  - Contagem de retentativas, saída de erro direcionada a `lead_logs` (evento `erro_crm`) e confirmação no Supabase de que o lead não recebeu `enviado_crm`: **não executados ou não confirmados**.
+  - Após o teste, `MOCK_CRM_MODE` voltou para `ok` e novo deploy foi realizado.
 
 ## 5. Cenários Obrigatórios
 
@@ -39,7 +43,7 @@ Resultados observados na execução dos nós do workflow:
 | 3 | E-mail inválido (ex.: maria.teste@exemplo) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 4 | Campo obrigatório ausente (ex.: sem telefone) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 5 | Mesmo e-mail do cenário 1 reenviado | **pendente** | Verificação de duplicidade e gravação de log não testadas de ponta a ponta. |
-| 6 | Lead qualificado com CRM indisponível | **pendente** | Falha do CRM e retry não testados. |
+| 6 | Lead qualificado com CRM indisponível | **parcial** | Executado com `MOCK_CRM_MODE=unavailable` na Vercel; lead `hot` enviado e nó `"Enviar Lead ao CRM"` retornou HTTP `503` (`"CRM indisponível (mock)"`). Não executados/não confirmados: contagem de retentativas, saída de erro ligada a `lead_logs` (evento `erro_crm`) e confirmação no Supabase de que o lead não recebeu `enviado_crm`. Após o teste, `MOCK_CRM_MODE` voltou para `ok` com novo deploy. |
 | 7 | Acesso direto à lista sem login | **pendente** | Proteção da rota validada no endpoint (`/dashboard` retornando HTTP `307`), mas teste completo de interface pendente. |
 
 ## 6. Resultados Já Executados
