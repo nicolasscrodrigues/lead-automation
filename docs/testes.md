@@ -60,3 +60,7 @@ Resultados observados na execução dos nós do workflow:
 - `POST /api/auth/login` com senha errada: código de resposta HTTP `401`
 - `POST /api/auth/login` com credenciais certas: código de resposta HTTP `200` com definição de cookie de sessão
 - `GET /dashboard` com cookie de sessão válido: código de resposta HTTP `200`
+
+### Validação em Produção (Deploy)
+- **URL pública**: https://lead-automation-ten-umber.vercel.app
+- `POST /api/mock-crm/leads` sem token: código de resposta HTTP `401` (executado, em produção)

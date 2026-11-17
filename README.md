@@ -9,7 +9,7 @@ Recebimento, qualificação e distribuição de leads.
 - Tailwind CSS
 - Supabase
 - n8n
-- Vercel (deploy pendente)
+- Vercel
 
 ## Como Executar
 
@@ -31,7 +31,7 @@ Recebimento, qualificação e distribuição de leads.
 
 ## Aplicação Publicada
 
-- Status: pendente.
+- https://lead-automation-ten-umber.vercel.app
 
 ## Referência
 
