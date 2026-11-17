@@ -33,8 +33,10 @@ Resultados observados na execução dos nós do workflow:
   - Lead com cargo `"Estagirio de Marketing"` foi direcionado para a rota de nutrição. O nó `"Nutrição: Atualizar Status Final"` foi executado com sucesso, com 1 item de saída. A gravação de log na tabela `lead_logs` com o evento `encaminhado_nutricao` permanece **pendente**.
 - **Simulação de Falha do CRM (`MOCK_CRM_MODE=unavailable` na Vercel)**:
   - Lead `hot` enviado com indisponibilidade simulada: o nó `"Enviar Lead ao CRM"` retornou HTTP `503` com a mensagem `"CRM indisponível (mock)"`.
-  - Contagem de retentativas, saída de erro direcionada a `lead_logs` (evento `erro_crm`) e confirmação no Supabase de que o lead não recebeu `enviado_crm`: **não executados ou não confirmados**.
-  - Após o teste, `MOCK_CRM_MODE` voltou para `ok` e novo deploy foi realizado.
+  - Saída de erro do nó conectada ao nó `"Registrar Erro no Log"` (Supabase, `lead_logs`).
+  - Confirmado no Supabase: linha criada em `lead_logs` com evento `erro_crm` e status `erro`, sem atribuição do status `enviado_crm` para o lead.
+  - Retry configurado (3 tentativas, intervalo de 5000 ms). A contagem das tentativas intermediárias não foi observada no histórico.
+  - Após o teste, `MOCK_CRM_MODE` voltou para `ok`, novo deploy foi realizado e o lead de teste retornou HTTP `200`.
 
 ## 5. Cenários Obrigatórios
 
@@ -45,7 +47,7 @@ Resultados observados na execução dos nós do workflow:
 | 3 | E-mail inválido (ex.: maria.teste@exemplo) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 4 | Campo obrigatório ausente (ex.: sem telefone) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 5 | Mesmo e-mail do cenário 1 reenviado | **pendente** | Verificação de duplicidade e gravação de log não testadas de ponta a ponta. |
-| 6 | Lead qualificado com CRM indisponível | **parcial** | Executado com `MOCK_CRM_MODE=unavailable` na Vercel; lead `hot` enviado e nó `"Enviar Lead ao CRM"` retornou HTTP `503` (`"CRM indisponível (mock)"`). Não executados/não confirmados: contagem de retentativas, saída de erro ligada a `lead_logs` (evento `erro_crm`) e confirmação no Supabase de que o lead não recebeu `enviado_crm`. Após o teste, `MOCK_CRM_MODE` voltou para `ok` com novo deploy. |
+| 6 | Lead qualificado com CRM indisponível | **executado** | Executado com `MOCK_CRM_MODE=unavailable` na Vercel; lead `hot` enviado e nó `"Enviar Lead ao CRM"` retornou HTTP `503` (`"CRM indisponível (mock)"`). Saída de erro ligada ao nó `"Registrar Erro no Log"`, com confirmação no Supabase de registro em `lead_logs` (evento `erro_crm`, status `erro`) e sem `enviado_crm` para o lead. Retry configurado (3 tentativas, 5000 ms; contagem não observada no histórico). Após o teste, `MOCK_CRM_MODE` voltou para `ok`, novo deploy realizado e envio subsequente retornou HTTP 200. |
 | 7 | Acesso direto à lista sem login | **pendente** | Proteção da rota validada no endpoint (`/dashboard` retornando HTTP `307`), mas teste completo de interface pendente. |
 
 ## 6. Resultados Já Executados
