@@ -1,52 +1,38 @@
 # Lead Automation
 
-Aplicação web para captura, qualificação automatizada e gestão de leads, construída como case técnico.
+Recebimento, qualificação e distribuição de leads.
 
-## Stack Tecnológica
+## Tecnologias
 
-- **Framework**: Next.js 16 (App Router)
-- **Linguagem**: TypeScript
-- **Estilização**: Tailwind CSS 4
-- **Validação**: Zod
-- **Autenticação**: `jose` (JWT HS256 em cookie `httpOnly`) + `bcryptjs`
-- **Banco de Dados**: Supabase (PostgreSQL com RLS ativo)
-- **Orquestração / Automação**: n8n (integração via webhook)
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Supabase
+- n8n
+- Vercel (deploy pendente)
 
-## Instalação e Execução Local
+## Como Executar
 
-1. Instale as dependências:
+1. Instalar as dependências:
    ```bash
    npm install
    ```
 
-2. Crie o arquivo de variáveis de ambiente a partir do exemplo e preencha os valores localmente:
+2. Configurar as variáveis de ambiente:
    ```bash
    cp .env.example .env.local
    ```
+   Preencha as variáveis de ambiente no arquivo `.env.local`.
 
-3. Inicie o servidor de desenvolvimento:
+3. Executar o ambiente de desenvolvimento:
    ```bash
    npm run dev
    ```
 
-4. Para verificar tipagem e build de produção:
-   ```bash
-   npx tsc --noEmit
-   npm run build
-   ```
+## Aplicação Publicada
 
-## Status Atual do Projeto
+- Status: pendente.
 
-### Implementado e Testado
-- Scaffold Next.js (App Router, TypeScript, Tailwind CSS) e estrutura modular do projeto.
-- Validação de variáveis de ambiente sob demanda (`lib/env.ts`).
-- Cliente administrativo Supabase server-only (`lib/supabase/server.ts`).
-- Endpoint de CRM simulado (`POST /api/mock-crm/leads`) com validação de token em tempo constante (`X-Mock-Token`), simulação de indisponibilidade (`MOCK_CRM_MODE=unavailable`) e registro de auditoria em `public.lead_logs`.
-- Formulário público de captura de leads (`app/page.tsx`, `components/LeadForm.tsx`) e proxy `POST /api/leads` para o webhook do n8n com timeout de 10s.
-- Autenticação administrativa (`POST /api/auth/login`, `POST /api/auth/logout`, `lib/auth/session.ts`, `app/login/page.tsx`, `components/LoginForm.tsx`) e proteção de `/dashboard` via `middleware.ts`.
-- Rota protegida `/dashboard` em estado inicial (`"Dashboard (em construção)"`) com botão de logout.
-- Documentação técnica em `docs/`.
+## Referência
 
-### Pendente
-- Visualização completa do Dashboard de leads, filtros e KPIs (`app/dashboard/page.tsx`, `components/LeadsTable.tsx`, `components/LeadFilters.tsx`, `components/KpiCards.tsx`).
-- Export e documentação detalhada do workflow n8n (`docs/n8n-workflow.md`).
+Documentação em docs/: fluxo.md, classificacao.md, testes.md e melhorias.md
