@@ -48,7 +48,7 @@ Resultados observados na execução dos nós do workflow:
 | 4 | Campo obrigatório ausente (ex.: sem telefone) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 5 | Mesmo e-mail do cenário 1 reenviado | **pendente** | Verificação de duplicidade e gravação de log não testadas de ponta a ponta. |
 | 6 | Lead qualificado com CRM indisponível | **executado** | Executado com `MOCK_CRM_MODE=unavailable` na Vercel; lead `hot` enviado e nó `"Enviar Lead ao CRM"` retornou HTTP `503` (`"CRM indisponível (mock)"`). Saída de erro ligada ao nó `"Registrar Erro no Log"`, com confirmação no Supabase de registro em `lead_logs` (evento `erro_crm`, status `erro`) e sem `enviado_crm` para o lead. Retry configurado (3 tentativas, 5000 ms; contagem não observada no histórico). Após o teste, `MOCK_CRM_MODE` voltou para `ok`, novo deploy realizado e envio subsequente retornou HTTP 200. |
-| 7 | Acesso direto à lista sem login | **pendente** | Proteção da rota validada no endpoint (`/dashboard` retornando HTTP `307`), mas teste completo de interface pendente. |
+| 7 | Acesso direto à lista sem login | **executado** | Testado em janela anônima acessando `/dashboard` na URL pública: usuário redirecionado para `/login` com exibição da tela de acesso administrativo. Validação complementada pelo teste de API em que `GET /dashboard` sem cookie retorna HTTP 307 para `/login`. |
 
 ## 6. Resultados Já Executados
 
@@ -76,3 +76,4 @@ Resultados observados na execução dos nós do workflow:
 ### Validação em Produção (Deploy)
 - **URL pública**: https://lead-automation-ten-umber.vercel.app
 - `POST /api/mock-crm/leads` sem token: código de resposta HTTP `401` (executado, em produção)
+- Acesso direto a `/dashboard` sem sessão em janela anônima: redirecionamento para `/login` (executado, em produção)
