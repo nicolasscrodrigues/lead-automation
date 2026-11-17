@@ -20,22 +20,26 @@ npm run dev
 - **Login Administrativo**: Acessar `/login`, informar usuário e senha. Testar autenticação com credenciais incorretas e corretas.
 - **Dashboard**: Tentar acessar `/dashboard` sem sessão autenticada para confirmar redirecionamento para `/login`. Efetuar login e acessar `/dashboard` para verificar a exibição da tela protegida e a ação de logout.
 
-## 4. Testes do Workflow (n8n - Fluxo Principal)
+## 4. Testes do Workflow (n8n - Fluxo Principal e CRM)
 Resultados observados na execução dos nós do workflow:
-- **Classificação `cold` (não qualificado)**: Lead com cargo `"Estagirio de Marketing"` foi direcionado para a rota de nutrição. O nó `"Nutrição: Atualizar Status Final"` foi executado com sucesso, com 1 item de saída. A gravação de log na tabela `lead_logs` com o evento `encaminhado_nutricao` permanece **pendente**.
-- **Classificação `hot` (qualificado)**: Lead com cargo `"Diretora Comercial"` foi classificado como `hot` e a execução chegou ao nó `"Enviar Lead ao CRM"`. A integração final com o CRM público permanece **pendente** e notificações **não foram implementadas**.
-- **Classificação `warm`**: Saída **ainda não confirmada**.
+- **Envio ao CRM (Leads Qualificados - `hot` e `warm`)**:
+  - Lead `hot` enviado ao CRM: resposta HTTP `200`, `{ ok: true }`, `log_id` gerado.
+  - Lead `warm` enviado ao CRM: resposta HTTP `200`, `{ ok: true }`, `log_id` gerado.
+  - Nó `"Atualizar Status Final"` (`enviado_crm`): executado com sucesso, com confirmação de `leads.status_final = enviado_crm` no banco.
+  - Nó `"Registrar no Log"` (`evento = enviado_crm`, `status = sucesso`): executado com sucesso, com nova linha criada na tabela `lead_logs`.
+- **Fluxo de Nutrição (Leads Não Qualificados - `cold`)**:
+  - Lead com cargo `"Estagirio de Marketing"` foi direcionado para a rota de nutrição. O nó `"Nutrição: Atualizar Status Final"` foi executado com sucesso, com 1 item de saída. A gravação de log na tabela `lead_logs` com o evento `encaminhado_nutricao` permanece **pendente**.
 
 ## 5. Cenários Obrigatórios
 
 | Cenário | Descrição | Status | Detalhes |
 | :--- | :--- | :--- | :--- |
-| 1 | Lead completo, qualificado | **parcial** | Classificação `hot` testada com sucesso até o nó `"Enviar Lead ao CRM"`; integração com CRM público pendente; notificação não implementada. |
-| 2 | Lead completo, não qualificado | **parcial** | Fluxo `cold` testado com sucesso (nó `"Nutrição: Atualizar Status Final"` executado com 1 item); gravação do log com evento `encaminhado_nutricao` pendente. |
+| 1 | Lead completo, qualificado | **parcial** | CRM e status final confirmados (`leads.status_final = enviado_crm` e registro em `lead_logs`); notificação não implementada. |
+| 2 | Lead completo, não qualificado | **parcial** | Fluxo `cold` até nutrição testado (nó `"Nutrição: Atualizar Status Final"` executado com 1 item); log de nutrição pendente. |
 | 3 | E-mail inválido (ex.: maria.teste@exemplo) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 4 | Campo obrigatório ausente (ex.: sem telefone) | **pendente** | Sem log de auditoria ligado no nó `"Responder 400"`. |
 | 5 | Mesmo e-mail do cenário 1 reenviado | **pendente** | Verificação de duplicidade e gravação de log não testadas de ponta a ponta. |
-| 6 | Lead qualificado com CRM indisponível | **pendente** | Fluxo de retry e tratamento de erro no n8n não testado de ponta a ponta. |
+| 6 | Lead qualificado com CRM indisponível | **pendente** | Falha do CRM e retry não testados. |
 | 7 | Acesso direto à lista sem login | **pendente** | Proteção da rota validada no endpoint (`/dashboard` retornando HTTP `307`), mas teste completo de interface pendente. |
 
 ## 6. Resultados Já Executados
