@@ -15,6 +15,7 @@ Registro do estado atual das funcionalidades e das melhorias futuras mapeadas pa
 
 ## Melhorias Futuras
 Nenhuma das melhorias abaixo está concluída:
+- **Detalhamento do motivo de rejeição em `lead_logs`**: Atualmente o nó `"Rejeitado: Registrar no Log"` utiliza fallback `'nao-informado'` para o e-mail e não registra a causa específica do erro no campo `detalhes`. Como evolução, persistir o motivo e os campos faltantes/inválidos no JSON de detalhes para facilitar a auditoria.
 - **Normalização de texto ou classificação com LLM (Gemini)**: A regra de classificação atual depende da correspondência exata do texto do cargo, sendo sensível a variações de acentuação e erros de digitação (*typos*). Como evolução, implementar normalização textual prévia ou utilizar modelo de inteligência artificial (Gemini) com fallback determinístico por regras.
 - **Ajuste na sincronização da resposta do webhook**: Reavaliar a posição do nó `"Responder 200"` no workflow para que o retorno ao cliente ocorra após a verificação de duplicidade, caso seja necessário informar ao usuário o status do processamento.
 - **Limite de tentativas no login**: Implementação de controle de taxa (rate limiting) para evitar tentativas excessivas e mitigar ataques de força bruta.

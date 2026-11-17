@@ -42,7 +42,7 @@ O banco de dados é hospedado no Supabase com tabelas criadas manualmente e **RL
 - **Valores de `status_final`**:
   - `processando`: **confirmado** no banco de dados.
   - `enviado_crm`: **confirmado** no banco de dados.
-  - `nutricao`: **a confirmar** no banco de dados.
+  - `nutricao`: **confirmado** no banco de dados.
   - `duplicado`: **a confirmar** no banco de dados.
   - `invalido`: **a confirmar** no banco de dados.
   - `erro`: **a confirmar** no banco de dados.
@@ -59,5 +59,9 @@ O banco de dados é hospedado no Supabase com tabelas criadas manualmente e **RL
 - Disparada para alertar o time comercial após a identificação e envio de leads qualificados (`hot`).
 
 ## 8. Dashboard
-- Status: **em construção**.
-- O fluxo de login administrativo (`POST /api/auth/login`, `POST /api/auth/logout`) e a proteção de rota (`/dashboard`) com cookies seguros `httpOnly` e JWT foram implementados e testados. Visualização completa de métricas e listagem permanece pendente.
+- Status: **implementado**.
+- **Autenticação e Proteção**: Rota protegida em `/dashboard` via middleware com cookies seguros `httpOnly` e JWT. Acessos não autenticados são redirecionados para `/login`. O encerramento da sessão administrativa ocorre via botão "Sair" conectado a `/api/auth/logout`.
+- **Listagem de Leads**: Renderizada via Server Component por meio da função `listLeads()` (`lib/leads/queries.ts`), que consulta `public.leads` utilizando o cliente administrativo Supabase protegido por `server-only` (limite de 200 registros mais recentes ordenados por `created_at desc`).
+- **Tabela e Formatação**: Exibe data e hora (formatadas em pt-BR com fuso `America/Sao_Paulo`), nome, e-mail, telefone, empresa, cargo, classificação e status final.
+- **Indicadores no Topo**: Cartões de contagem consolidada com total de leads e totais segmentados por classificação (`hot`, `warm`, `cold` e não classificados).
+- **Tratamento de Exceções**: Exibição de mensagem amigável caso a tabela esteja vazia ("Nenhum lead recebido") ou em caso de erro na consulta ("Não foi possível carregar os leads."), com erro registrado estritamente no console do servidor.

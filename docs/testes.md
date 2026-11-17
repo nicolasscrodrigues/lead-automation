@@ -18,7 +18,7 @@ npm run dev
 ## 3. Como Testar a Aplicação
 - **Formulário Público**: Acessar `/`, preencher os campos cadastrais e submeter. A interface exibe aviso de sucesso ao encaminhar ou alerta de indisponibilidade caso o backend não consiga comunicar com o webhook.
 - **Login Administrativo**: Acessar `/login`, informar usuário e senha. Testar autenticação com credenciais incorretas e corretas.
-- **Dashboard**: Tentar acessar `/dashboard` sem sessão autenticada para confirmar redirecionamento para `/login`. Efetuar login e acessar `/dashboard` para verificar a exibição da tela protegida e a ação de logout.
+- **Dashboard**: Tentar acessar `/dashboard` sem sessão autenticada para confirmar redirecionamento para `/login`. Efetuar login e acessar `/dashboard` para verificar a exibição da tela protegida com a tabela de leads, contadores e a ação de logout.
 
 ## 4. Testes do Workflow (n8n - Fluxo Principal e CRM)
 Resultados observados na execução dos nós do workflow:
@@ -80,6 +80,10 @@ Resultados observados na execução dos nós do workflow:
 - `POST /api/auth/login` com senha errada: código de resposta HTTP `401`
 - `POST /api/auth/login` com credenciais certas: código de resposta HTTP `200` com definição de cookie de sessão
 - `GET /dashboard` com cookie de sessão válido: código de resposta HTTP `200`
+
+### Dashboard e Listagem de Leads (`/dashboard`)
+- Acesso autenticado com cookie de sessão: código de resposta HTTP `200`, carregamento dos registros de `public.leads` ordenados por `created_at desc` (limite 200), cálculo de indicadores por categoria e renderização da tabela formatada em pt-BR (fuso `America/Sao_Paulo`).
+- Acesso sem cookie de sessão: código de resposta HTTP `307` com redirecionamento para `/login`.
 
 ### Validação em Produção (Deploy)
 - **URL pública**: https://lead-automation-ten-umber.vercel.app
