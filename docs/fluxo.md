@@ -33,8 +33,8 @@ Nodes existentes no workflow:
 16. **Notificar Comercial (Discord)**: Dispara notificação com os dados do lead qualificado para o canal do time comercial.
 
 ## 4. Distribuição e Destino dos Leads
-- **Leads Qualificados (`hot`)**: Encaminhados para o CRM simulado via requisição HTTP e notificados no canal comercial.
-- **Leads `warm` e `cold`**: Leads `warm` direcionados ao CRM; destino de nutrição para `cold` marcado como testado no fluxo e pendente de log.
+- **Leads Qualificados (Quente / `hot`)**: Encaminhados para o CRM simulado via requisição HTTP e notificados no canal comercial.
+- **Leads Morno (`warm`) e Frio (`cold`)**: Leads com classificação morno (`warm`) são direcionados ao CRM; leads frios (`cold`) são encaminhados para o fluxo de nutrição (`status_final = nutricao`) com log de auditoria.
 
 ## 5. Banco de Dados (Supabase)
 O banco de dados é hospedado no Supabase com tabelas criadas manualmente e **RLS (Row Level Security) ativo**:
@@ -57,12 +57,12 @@ O banco de dados é hospedado no Supabase com tabelas criadas manualmente e **RL
 ## 7. Notificações
 - Implementada via canal do Discord por meio de webhook no nó `"Notificar Comercial (Discord)"` do n8n.
 - A URL do webhook do canal permanece configurada exclusivamente nas credenciais do n8n, nunca exposta no repositório.
-- Disparada para alertar o time comercial após a identificação e envio de leads qualificados (`hot`).
+- Disparada para alertar o time comercial após a identificação e envio de leads qualificados (quente / `hot`).
 
 ## 8. Dashboard
 - Status: **implementado**.
 - **Autenticação e Proteção**: Rota protegida em `/dashboard` via middleware com cookies seguros `httpOnly` e JWT. Acessos não autenticados são redirecionados para `/login`. O encerramento da sessão administrativa ocorre via botão "Sair" conectado a `/api/auth/logout`.
 - **Listagem de Leads**: Renderizada via Server Component por meio da função `listLeads()` (`lib/leads/queries.ts`), que consulta `public.leads` utilizando o cliente administrativo Supabase protegido por `server-only` (limite de 200 registros mais recentes ordenados por `created_at desc`).
-- **Tabela e Formatação**: Exibe data e hora (formatadas em pt-BR com fuso `America/Sao_Paulo`), nome, e-mail, telefone, empresa, cargo, classificação e status final.
-- **Indicadores no Topo**: Cartões de contagem consolidada com total de leads e totais segmentados por classificação (`hot`, `warm`, `cold` e não classificados).
+- **Tabela e Formatação**: Exibe data e hora (formatadas em pt-BR com fuso `America/Sao_Paulo`), nome, e-mail, telefone, empresa, cargo, classificação padronizada (Quente, Morno, Frio) e status final.
+- **Indicadores no Topo**: Cartões de contagem consolidada com total de leads e totais segmentados por classificação (Quente, Morno, Frio e Não classificado), suportando tanto os valores padronizados quanto os registros legados em inglês (`hot`, `warm`, `cold`).
 - **Tratamento de Exceções**: Exibição de mensagem amigável caso a tabela esteja vazia ("Nenhum lead recebido") ou em caso de erro na consulta ("Não foi possível carregar os leads."), com erro registrado estritamente no console do servidor.

@@ -18,25 +18,40 @@ function formatDateTime(dateString: string): string {
   }
 }
 
+type NormalizedClassification = "quente" | "morno" | "frio" | "nao_classificado";
+
+function normalizeClassification(
+  classification: string | null
+): NormalizedClassification {
+  if (!classification) return "nao_classificado";
+  const normalized = classification.trim().toLowerCase();
+  if (normalized === "quente" || normalized === "hot") return "quente";
+  if (normalized === "morno" || normalized === "warm") return "morno";
+  if (normalized === "frio" || normalized === "cold") return "frio";
+  return "nao_classificado";
+}
+
 function renderClassificationBadge(classification: string | null) {
-  if (classification === "hot") {
+  const normalized = normalizeClassification(classification);
+
+  if (normalized === "quente") {
     return (
       <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950/60 dark:text-red-300">
-        Hot
+        Quente
       </span>
     );
   }
-  if (classification === "warm") {
+  if (normalized === "morno") {
     return (
       <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-        Warm
+        Morno
       </span>
     );
   }
-  if (classification === "cold") {
+  if (normalized === "frio") {
     return (
       <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
-        Cold
+        Frio
       </span>
     );
   }
@@ -59,18 +74,19 @@ async function LeadsData() {
   }
 
   const total = leads.length;
-  let hotCount = 0;
-  let warmCount = 0;
-  let coldCount = 0;
+  let quenteCount = 0;
+  let mornoCount = 0;
+  let frioCount = 0;
   let unclassifiedCount = 0;
 
   for (const lead of leads) {
-    if (lead.classificacao === "hot") {
-      hotCount++;
-    } else if (lead.classificacao === "warm") {
-      warmCount++;
-    } else if (lead.classificacao === "cold") {
-      coldCount++;
+    const category = normalizeClassification(lead.classificacao);
+    if (category === "quente") {
+      quenteCount++;
+    } else if (category === "morno") {
+      mornoCount++;
+    } else if (category === "frio") {
+      frioCount++;
     } else {
       unclassifiedCount++;
     }
@@ -85,16 +101,16 @@ async function LeadsData() {
           <p className="mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100">{total}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-red-600 dark:text-red-400">Hot</p>
-          <p className="mt-1 text-2xl font-bold text-red-700 dark:text-red-300">{hotCount}</p>
+          <p className="text-xs font-medium text-red-600 dark:text-red-400">Quente</p>
+          <p className="mt-1 text-2xl font-bold text-red-700 dark:text-red-300">{quenteCount}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-amber-600 dark:text-amber-400">Warm</p>
-          <p className="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-300">{warmCount}</p>
+          <p className="text-xs font-medium text-amber-600 dark:text-amber-400">Morno</p>
+          <p className="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-300">{mornoCount}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Cold</p>
-          <p className="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-300">{coldCount}</p>
+          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Frio</p>
+          <p className="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-300">{frioCount}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 col-span-2 sm:col-span-1">
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Não classificado</p>
