@@ -25,11 +25,12 @@ Nodes existentes no workflow:
 8. **Separar duplicados**: Roteia o fluxo separando leads duplicados de leads inéditos.
 9. **Registrar Duplicidade no Log**: Grava a ocorrência de duplicidade na tabela de logs para auditoria.
 10. **Registrar Novo Lead**: Insere o novo lead na tabela principal com `status_final = 'processando'`.
-11. **Classificar Lead**: Aplica a lógica de qualificação sobre as informações do lead.
-12. **Atualizar Classificação do Lead**: Atualiza o registro do lead com a classificação atribuída e o método utilizado.
-13. **Direcionar por Classificação**: Conduz o lead para o destino adequado conforme a sua classificação.
-14. **Enviar Lead ao CRM**: Dispara os dados do lead qualificado para a API do CRM.
-15. **Notificar Comercial (Discord)**: Dispara notificação com os dados do lead qualificado para o canal do time comercial.
+11. **Gemini: Classificar Lead**: Avalia o perfil e cargo do lead via chamada HTTP ao modelo `gemini-4-hydrogen`.
+12. **Validar Classificação**: Avalia a resposta da IA (Code) definindo `metodo_classificacao = gemini` ou aplicando contingência determinística por regras (`metodo_classificacao = fallback`).
+13. **Atualizar Classificação do Lead**: Atualiza o registro do lead com a classificação atribuída e o método utilizado.
+14. **Direcionar por Classificação**: Conduz o lead para o destino adequado conforme a sua classificação.
+15. **Enviar Lead ao CRM**: Dispara os dados do lead qualificado para a API do CRM.
+16. **Notificar Comercial (Discord)**: Dispara notificação com os dados do lead qualificado para o canal do time comercial.
 
 ## 4. Distribuição e Destino dos Leads
 - **Leads Qualificados (`hot`)**: Encaminhados para o CRM simulado via requisição HTTP e notificados no canal comercial.

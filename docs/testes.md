@@ -22,6 +22,10 @@ npm run dev
 
 ## 4. Testes do Workflow (n8n - Fluxo Principal e CRM)
 Resultados observados na execução dos nós do workflow:
+- **Classificação com Gemini e Fallback**:
+  - Lead com cargo `"estagiario"`: avaliado via Gemini (`gemini-4-hydrogen`), recebendo classificação `cold` e persistido com `metodo_classificacao = gemini` (resultado coincidente com a regra).
+  - Lead com cargo `"Líder de Crescimento"`: avaliado via Gemini, recebendo classificação `hot` e persistido com `metodo_classificacao = gemini` (divergência em relação à regra que atribuiria `warm`, demonstrando qualificação contextual).
+  - Simulação de falha na chamada da IA (chave inválida com *On Error* em *Continue*): avaliado pelo nó `"Validar Classificação"` que acionou as regras determinísticas de contingência, resultando em classificação `warm` e persistido com `metodo_classificacao = fallback`.
 - **Envio ao CRM (Leads Qualificados - `hot` e `warm`)**:
   - Lead `hot` enviado ao CRM: resposta HTTP `200`, `{ ok: true }`, `log_id` gerado.
   - Lead `warm` enviado ao CRM: resposta HTTP `200`, `{ ok: true }`, `log_id` gerado.
